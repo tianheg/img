@@ -4,5 +4,5 @@
 
 ## TODO
 
-- auto get alt text through filename: date-description
+- auto get alt text through ai generate: date-description
 - category imgs
