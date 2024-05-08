@@ -11,7 +11,7 @@ export default defineConfig({
   adapter: cloudflare(),
   vite: {
     ssr: {
-      noExternal: true
+      external: ['node:path']
     },
   },
 });
