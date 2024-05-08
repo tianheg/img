@@ -1,0 +1,28 @@
+---
+import { getSession } from 'auth-astro/server';
+
+import PhotoSwipe from '../components/PhotoSwipe.astro';
+import Layout from '../layouts/Layout.astro';
+
+const session = await getSession(Astro.request);
+---
+
+<Layout>
+  {
+    session ? (
+      <>
+        <h1 class="text-3xl text-center my-20 font-bold underline">
+          Astro + PhotoSwipe
+        </h1>
+        <PhotoSwipe imageFolder="home" />
+      </>
+    ) : (
+      <>
+        <h1 class="text-3xl text-center my-20 font-bold underline">
+          Access Denied
+        </h1>
+        <p class="text-center">You must sign in to view this page</p>
+      </>
+    )
+  }
+</Layout>

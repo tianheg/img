@@ -1,0 +1,29 @@
+---
+import { getSession } from 'auth-astro/server';
+
+const session = await getSession(Astro.request);
+const hrefHome = "/";
+const currentPath = Astro.url.pathname;
+---
+
+<div class="navbar justify-around">
+	<ul class="menu menu-horizontal join">
+		<li>
+			<a
+				href={hrefHome}
+				class=`btn btn-primary join-item ${currentPath != hrefHome && "btn-outline"}`
+				>Home</a
+			>
+		</li>
+		<li>
+			{
+				session ? (
+					<p>Hi {session?.user?.name}!</p>
+					<button class="signout">Sign out</button>
+				) : (
+					<button class="signin">Sign in</button>
+				)
+			}
+		</li>
+	</ul>
+</div>
