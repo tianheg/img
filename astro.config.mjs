@@ -8,7 +8,7 @@ import tailwind from "@astrojs/tailwind";
 export default defineConfig({
   integrations: [auth(), tailwind()],
   output: 'server',
-  adapter: cloudflare({ mode: "directory" }),
+  adapter: cloudflare(),
   vite: {
     ssr: {
       external: ['node:path']
