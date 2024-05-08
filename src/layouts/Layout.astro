@@ -19,15 +19,5 @@ import { ViewTransitions } from 'astro:transitions';
 	<body>
 		<Navbar />
 		<slot />
-		<script>
-			import { signIn, signOut } from 'auth-astro/client';
-
-			document
-				.querySelector('.signin')
-				?.addEventListener('click', () => signIn('github'));
-			document
-				.querySelector('.signout')
-				?.addEventListener('click', () => signOut());
-		</script>
 	</body>
 </html>

@@ -1,7 +1,4 @@
 ---
-import { getSession } from 'auth-astro/server';
-
-const session = await getSession(Astro.request);
 const hrefHome = "/";
 const currentPath = Astro.url.pathname;
 ---
@@ -14,16 +11,6 @@ const currentPath = Astro.url.pathname;
 				class=`btn btn-primary join-item ${currentPath != hrefHome && "btn-outline"}`
 				>Home</a
 			>
-		</li>
-		<li>
-			{
-				session ? (
-					<p>Hi {session?.user?.name}!</p>
-					<button class="signout">Sign out</button>
-				) : (
-					<button class="signin">Sign in</button>
-				)
-			}
 		</li>
 	</ul>
 </div>
