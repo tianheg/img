@@ -7,8 +7,8 @@ import tailwind from "@astrojs/tailwind";
 // https://astro.build/config
 export default defineConfig({
   integrations: [auth(), tailwind()],
-  output: 'hybrid',
-  adapter: cloudflare(),
+  output: 'server',
+  adapter: cloudflare({ mode: "directory" }),
   vite: {
     ssr: {
       external: ['node:path']
