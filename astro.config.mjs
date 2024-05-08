@@ -9,4 +9,9 @@ export default defineConfig({
   integrations: [auth(), tailwind()],
   output: 'server',
   adapter: cloudflare(),
+  vite: {
+    ssr: {
+      noExternal: false
+    },
+  },
 });
