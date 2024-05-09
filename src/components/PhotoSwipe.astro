@@ -11,6 +11,7 @@ const images = import.meta.glob<{ default: ImageMetadata }>('/src/assets/*/*');
 const imagePaths = Object.keys(images).filter((imagePath) => {
 	return imagePath.startsWith(`/src/assets/${imageFolder}/`);
 });
+const url = new URLSearchParams(Astro.params.url);
 ---
 
 <div
@@ -25,9 +26,14 @@ const imagePaths = Object.keys(images).filter((imagePath) => {
 				width: 1920,
 			});
 
-			const altTxtResponse = await fetch(`/genAltTxt?img=${imagePath}`);
+			const altTxtResponse = await Promise.race([
+				fetch(`https://img2txt.tianheg.workers.dev/?img=${url}${imagePath}`),
+				new Promise((_, reject) => setTimeout(reject, 1000000)),
+			]);
+			//const altTxtResponse = await fetch(`https://img2txt.tianheg.workers.dev/?img=${url}${imagePath}`);
 			const altTxt = altTxtResponse.ok ? await altTxtResponse.json() : {};
 
+			
 			return (
 				<a
 					href={optimizedImage.src}
@@ -38,7 +44,7 @@ const imagePaths = Object.keys(images).filter((imagePath) => {
 				>
 					<Image
 						src={image}
-						alt={altTxt.description || ''}
+						alt={''}
 						height={350}
 						class={
 							'object-cover w-full grayscale-[80%] hover:grayscale-0 transition duration-300 ease-in-out aspect-[3/2]'
