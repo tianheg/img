@@ -1,3 +1,5 @@
+import fs from 'node:fs/promises';
+
 interface Env {
   AI: any;
 }
@@ -11,12 +13,6 @@ export const onRequest: PagesFunction<Env> = async ({ request, env }) => {
     return new Response("Method not allowed", { status: 405 });
   }
 
-  // // 检查内容类型是否为 image/webp
-  // const contentType = headers.get("content-type");
-  // if (contentType !== "image/webp") {
-  //   return new Response("Invalid content-type", { status: 400 });
-  // }
-
   // 解析查询参数中的图片 URL
   const imgParam = parsedUrl.searchParams.get("img");
   if (!imgParam) {
@@ -24,16 +20,11 @@ export const onRequest: PagesFunction<Env> = async ({ request, env }) => {
   }
 
   try {
-    // 使用 fetch 获取图片数据
-    const imageResponse = await fetch(imgParam);
-    if (!imageResponse.ok) {
-      throw new Error("Failed to fetch the image");
-    }
-    const blob = await imageResponse.blob();
+    const imageBuffer = await fs.readFile(imgParam);
 
     // 准备输入数据
     const input = {
-      image: [...new Uint8Array(await blob.arrayBuffer())],
+      image: [...new Uint8Array(Buffer.from(imageBuffer).buffer)],
       prompt: "Generate a caption for this image",
       max_tokens: 512,
     };
