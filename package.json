@@ -10,7 +10,6 @@
   },
   "dependencies": {
     "@astrojs/check": "^0.6.0",
-    "@astrojs/cloudflare": "^10.2.5",
     "@astrojs/tailwind": "^5.1.0",
     "astro": "^4.7.1",
     "photoswipe": "^5.4.3",
