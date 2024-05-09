@@ -1,13 +1,13 @@
 ---
-import type { ImageMetadata } from "astro";
-import { Image, getImage } from "astro:assets";
+import type { ImageMetadata } from 'astro';
+import { Image, getImage } from 'astro:assets';
 
 interface Props {
 	imageFolder: string;
 }
 
 const { imageFolder } = Astro.props;
-const images = import.meta.glob<{ default: ImageMetadata }>("/src/assets/*/*");
+const images = import.meta.glob<{ default: ImageMetadata }>('/src/assets/*/*');
 const imagePaths = Object.keys(images).filter((imagePath) => {
 	return imagePath.startsWith(`/src/assets/${imageFolder}/`);
 });
@@ -25,6 +25,9 @@ const imagePaths = Object.keys(images).filter((imagePath) => {
 				width: 1920,
 			});
 
+			const altTxtResponse = await fetch(`/genAltTxt?img=${imagePath}`);
+			const altTxt = altTxtResponse.ok ? await altTxtResponse.json() : {};
+
 			return (
 				<a
 					href={optimizedImage.src}
@@ -35,10 +38,10 @@ const imagePaths = Object.keys(images).filter((imagePath) => {
 				>
 					<Image
 						src={image}
-						alt={"altText"}
+						alt={altTxt.description || ''}
 						height={350}
 						class={
-							"object-cover w-full grayscale-[80%] hover:grayscale-0 transition duration-300 ease-in-out aspect-[3/2]"
+							'object-cover w-full grayscale-[80%] hover:grayscale-0 transition duration-300 ease-in-out aspect-[3/2]'
 						}
 					/>
 				</a>
@@ -48,22 +51,22 @@ const imagePaths = Object.keys(images).filter((imagePath) => {
 </div>
 
 <script>
-	import PhotoSwipeLightbox from "photoswipe/lightbox";
-	import "photoswipe/style.css";
+	import PhotoSwipeLightbox from 'photoswipe/lightbox';
+	import 'photoswipe/style.css';
 
 	let lightbox: PhotoSwipeLightbox;
 
-	document.addEventListener("astro:page-load", () => {
+	document.addEventListener('astro:page-load', () => {
 		lightbox = new PhotoSwipeLightbox({
-			gallery: "#gallery",
-			children: "a",
-			pswpModule: () => import("photoswipe"),
+			gallery: '#gallery',
+			children: 'a',
+			pswpModule: () => import('photoswipe'),
 		});
 
 		lightbox.init();
 	});
 
-	document.addEventListener("astro:before-swap", () => {
+	document.addEventListener('astro:before-swap', () => {
 		lightbox.destroy();
 	});
 </script>
