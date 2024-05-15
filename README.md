@@ -4,8 +4,7 @@
 
 ## TODO
 
-- auto get alt text through ai generate: date-description
-- category imgs
+- ~~auto get alt text through ai generate: date-description~~
 
 ## Cloudflare API request limits
 
