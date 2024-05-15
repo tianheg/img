@@ -1,6 +1,10 @@
 ---
 import type { ImageMetadata } from 'astro';
 import { Image, getImage } from 'astro:assets';
+import Cloudflare from 'cloudflare';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 interface Props {
 	imageFolder: string;
@@ -11,7 +15,25 @@ const images = import.meta.glob<{ default: ImageMetadata }>('/src/assets/*/*');
 const imagePaths = Object.keys(images).filter((imagePath) => {
 	return imagePath.startsWith(`/src/assets/${imageFolder}/`);
 });
-const url = new URLSearchParams(Astro.params.url);
+
+// get alt text from Cloudflare KV
+const client = new Cloudflare({
+	apiToken: process.env.CF_API_TOKEN_KV,
+});
+
+const kvOptions = {
+	account_id: 'b0dda00db555f237f277259bed93134b',
+};
+try {
+	const altTexts = await client.kv.namespaces.values.get(
+		'da0d1ae333544faea791fb166dfbc01c',
+		'img-altTexts',
+		kvOptions,
+	);
+	console.log(altTexts);
+} catch (error) {
+	console.error(error);
+}
 ---
 
 <div
@@ -26,14 +48,11 @@ const url = new URLSearchParams(Astro.params.url);
 				width: 1920,
 			});
 
-			const altTxtResponse = await Promise.race([
-				fetch(`https://img2txt.tianheg.workers.dev/?img=${url}${imagePath}`),
-				new Promise((_, reject) => setTimeout(reject, 1000000)),
-			]);
-			//const altTxtResponse = await fetch(`https://img2txt.tianheg.workers.dev/?img=${url}${imagePath}`);
-			const altTxt = altTxtResponse.ok ? await altTxtResponse.json() : {};
+			// Get the caption for the current image
+			// let altText = await fetch('https://api.imgflip.com/getcaption');
 
-			
+			// console.log(altText);
+
 			return (
 				<a
 					href={optimizedImage.src}
@@ -44,7 +63,9 @@ const url = new URLSearchParams(Astro.params.url);
 				>
 					<Image
 						src={image}
-						alt={''}
+						alt={
+							'testsgfdgsdfgdsfgsdfg.fsgf;gsokpfgjpo\nisdfjkgdfgjskidfgops;djfgofpdi\ndasfdsafasfdsafdsf'
+						}
 						height={350}
 						class={
 							'object-cover w-full grayscale-[80%] hover:grayscale-0 transition duration-300 ease-in-out aspect-[3/2]'
@@ -58,7 +79,9 @@ const url = new URLSearchParams(Astro.params.url);
 
 <script>
 	import PhotoSwipeLightbox from 'photoswipe/lightbox';
+	import PhotoSwipeDynamicCaption from 'photoswipe-dynamic-caption-plugin';
 	import 'photoswipe/style.css';
+	import 'photoswipe-dynamic-caption-plugin/photoswipe-dynamic-caption-plugin.css';
 
 	let lightbox: PhotoSwipeLightbox;
 
@@ -67,7 +90,22 @@ const url = new URLSearchParams(Astro.params.url);
 			gallery: '#gallery',
 			children: 'a',
 			pswpModule: () => import('photoswipe'),
+			paddingFn: (viewportSize) => {
+				return {
+					top: 30,
+					bottom: 30,
+					left: 70,
+					right: 40,
+				};
+			},
 		});
+
+		const captionPlugin = new PhotoSwipeDynamicCaption(lightbox, {
+			type: 'auto',
+		});
+		captionContent: (slide) => {
+			return slide.data.element.querySelector('img').getAttribute('alt');
+		};
 
 		lightbox.init();
 	});
