@@ -1,0 +1,29 @@
+name: img2txt
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - 'src/assets/home/**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+
+      - name: Build
+        run: |
+          npm install
+          node scripts/img2txt.js
+        env:
+          CF_AI_API_TOKEN: ${{ secrets.CF_AI_API_TOKEN }}
+          CF_KV_API_TOKEN: ${{ secrets.CF_KV_API_TOKEN }}
