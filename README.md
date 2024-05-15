@@ -10,7 +10,7 @@
 ## Steps
 
 1. Add an image
-2. Run `node scripts/rmExif.js` to rm exif data
+2. Run `node scripts/rmExif.js` to rm exif data, it also compress the image
 3. Run `node scripts/img2txt.js` to generate captions and upload to Cloudflare KV
 4. Cloudflare auto deploy the site
 
