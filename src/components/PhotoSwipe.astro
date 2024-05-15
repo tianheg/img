@@ -24,16 +24,19 @@ const client = new Cloudflare({
 const kvOptions = {
 	account_id: 'b0dda00db555f237f277259bed93134b',
 };
-try {
-	const altTexts = await client.kv.namespaces.values.get(
-		'da0d1ae333544faea791fb166dfbc01c',
-		'img-altTexts',
-		kvOptions,
-	);
-	console.log(altTexts);
-} catch (error) {
-	console.error(error);
-}
+const altTexts = async () => {
+	try {
+		const data = await client.kv.namespaces.values.get(
+			'da0d1ae333544faea791fb166dfbc01c',
+			'img-altTexts',
+			kvOptions,
+		);
+		return data;
+	} catch (error) {
+		console.error(error);
+		return null;
+	}
+};
 ---
 
 <div
@@ -48,10 +51,10 @@ try {
 				width: 1920,
 			});
 
-			// Get the caption for the current image
-			// let altText = await fetch('https://api.imgflip.com/getcaption');
-
-			// console.log(altText);
+			const altTextData = await altTexts();
+			
+			const altText = Array.isArray(altTextData) ? altTextData.find((altText) => altText.name === imagePath.split('/').pop())?.altText : null;
+			console.log(altText);
 
 			return (
 				<a
@@ -63,9 +66,7 @@ try {
 				>
 					<Image
 						src={image}
-						alt={
-							'testsgfdgsdfgdsfgsdfg.fsgf;gsokpfgjpo\nisdfjkgdfgjskidfgops;djfgofpdi\ndasfdsafasfdsafdsf'
-						}
+						alt={'// altText'}
 						height={350}
 						class={
 							'object-cover w-full grayscale-[80%] hover:grayscale-0 transition duration-300 ease-in-out aspect-[3/2]'
