@@ -52,8 +52,8 @@ const altTexts = async () => {
 			});
 
 			const altTextData = await altTexts();
-			
-			const altText = Array.isArray(altTextData) ? altTextData.find((altText) => altText.name === imagePath.split('/').pop())?.altText : null;
+
+			const altText = altTextData?.find((item) => item.name === imagePath.split('/').pop())?.altText;
 			console.log(altText);
 
 			return (
@@ -66,7 +66,7 @@ const altTexts = async () => {
 				>
 					<Image
 						src={image}
-						alt={'// altText'}
+						alt={altText}
 						height={350}
 						class={
 							'object-cover w-full grayscale-[80%] hover:grayscale-0 transition duration-300 ease-in-out aspect-[3/2]'
