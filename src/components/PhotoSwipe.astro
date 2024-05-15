@@ -18,7 +18,7 @@ const imagePaths = Object.keys(images).filter((imagePath) => {
 
 // get alt text from Cloudflare KV
 const client = new Cloudflare({
-	apiToken: process.env.CF_API_TOKEN_KV,
+	apiToken: process.env.CF_KV_API_TOKEN,
 });
 
 const kvOptions = {
@@ -31,12 +31,14 @@ const altTexts = async () => {
 			'img-altTexts',
 			kvOptions,
 		);
-		return data;
+		return JSON.parse(data);
 	} catch (error) {
 		console.error(error);
-		return null;
+		return [];
 	}
 };
+
+const altTextData = await altTexts();
 ---
 
 <div
@@ -44,37 +46,39 @@ const altTexts = async () => {
 	class="container mx-auto px-2 pb-2 grid grid-cols-2 md:grid-cols-3 gap-2"
 >
 	{
-		imagePaths.map(async (imagePath) => {
-			let image = images[imagePath]();
-			let optimizedImage = await getImage({
-				src: image,
-				width: 1920,
-			});
+		await Promise.all(
+			imagePaths.map(async (imagePath) => {
+				let image = images[imagePath]();
+				let optimizedImage = await getImage({
+					src: image,
+					width: 1920,
+				});
 
-			const altTextData = await altTexts();
+				const altText = altTextData?.find(
+					(item: { name: string; altText: string }) =>
+						item.name === imagePath.split('/').pop(),
+				)?.altText;
 
-			const altText = altTextData?.find((item) => item.name === imagePath.split('/').pop())?.altText;
-			console.log(altText);
-
-			return (
-				<a
-					href={optimizedImage.src}
-					data-pswp-width={optimizedImage.attributes.width}
-					data-pswp-height={optimizedImage.attributes.height}
-					target="_blank"
-					class="overflow-hidden rounded-md border-[1px] border-primary hover:border-secondary"
-				>
-					<Image
-						src={image}
-						alt={altText}
-						height={350}
-						class={
-							'object-cover w-full grayscale-[80%] hover:grayscale-0 transition duration-300 ease-in-out aspect-[3/2]'
-						}
-					/>
-				</a>
-			);
-		})
+				return (
+					<a
+						href={optimizedImage.src}
+						data-pswp-width={optimizedImage.attributes.width}
+						data-pswp-height={optimizedImage.attributes.height}
+						target="_blank"
+						class="overflow-hidden rounded-md border-[1px] border-primary hover:border-secondary"
+					>
+						<Image
+							src={image}
+							alt={altText || 'This image without alt text'}
+							height={350}
+							class={
+								'object-cover w-full grayscale-[80%] hover:grayscale-0 transition duration-300 ease-in-out aspect-[3/2]'
+							}
+						/>
+					</a>
+				);
+			}),
+		)
 	}
 </div>
 
@@ -91,7 +95,7 @@ const altTexts = async () => {
 			gallery: '#gallery',
 			children: 'a',
 			pswpModule: () => import('photoswipe'),
-			paddingFn: (viewportSize) => {
+			paddingFn: () => {
 				return {
 					top: 30,
 					bottom: 30,
@@ -104,7 +108,7 @@ const altTexts = async () => {
 		const captionPlugin = new PhotoSwipeDynamicCaption(lightbox, {
 			type: 'auto',
 		});
-		captionContent: (slide) => {
+		captionContent: (slide: any) => {
 			return slide.data.element.querySelector('img').getAttribute('alt');
 		};
 
