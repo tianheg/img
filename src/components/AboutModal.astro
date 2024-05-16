@@ -1,0 +1,20 @@
+---
+---
+
+<div class="fixed top-4 right-4">
+  <button class="btn bg-slate-700 text-white" onclick="about_modal.showModal()">About</button>
+</div>
+<dialog id="about_modal" class="modal">
+  <div class="modal-box w-11/12 max-w-5xl">
+    <h3 class="font-bold text-lg">Hello!</h3>
+    <p class="py-4">This is my gallery site. Some are my photos, some are images I found on the internet. If you found I used your images without noticing copyright issues, please <a href="https://tianheg.co/msg/" target="_blank" class="link">let me know</a>.</p>
+    <div class="modal-action">
+      <form method="dialog">
+        <button class="btn">Close</button>
+      </form>
+    </div>
+  </div>
+  <form method="dialog" class="modal-backdrop">
+    <button>close</button>
+  </form>
+</dialog>
