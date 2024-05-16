@@ -12,11 +12,17 @@ const imageFolderPath = join(__dirname, '..', 'src', 'assets', 'home');
 const cloudflareAIApiUrl = 'https://api.cloudflare.com/client/v4/accounts/b0dda00db555f237f277259bed93134b/ai/run/@cf/unum/uform-gen2-qwen-500m';
 
 const imageFiles = fs.readdirSync(imageFolderPath);
-const MAX_CONCURRENT_REQUESTS = 5; // 同时处理的请求数量
+const MAX_CONCURRENT_REQUESTS = 5;
 const altTexts = [];
 const processing = new Set();
 let concurrentRequests = 0;
 
+/**
+ * Process an image to generate a caption using the Cloudflare AI API.
+ *
+ * @param {string} imageFile - The file name of the image to be processed.
+ * @return {Promise} A Promise that resolves with the generated caption information.
+ */
 const processImage = async (imageFile) => {
   const imagePath = join(imageFolderPath, imageFile);
   const imageBuffer = fs.readFileSync(imagePath);
@@ -26,7 +32,7 @@ const processImage = async (imageFile) => {
     max_tokens: 256,
   };
 
-  processing.add(imageFile); // 添加到正在处理的 Set 中
+  processing.add(imageFile);
   concurrentRequests++;
 
   console.log(`Processing image: ${imageFile}, concurrent requests: ${concurrentRequests}`);
@@ -41,9 +47,9 @@ const processImage = async (imageFile) => {
       body: JSON.stringify(input),
       timeout: 15000,
     });
+
     const data = await response.json();
 
-    // Only add the alt text if it's non-empty and the request was successful
     if (data.success && data.result.description !== '') {
       altTexts.push({
         name: imageFile,
@@ -62,43 +68,53 @@ const processImage = async (imageFile) => {
     processing.delete(imageFile);
     concurrentRequests--;
     console.log(`Finished processing image: ${imageFile}, concurrent requests: ${concurrentRequests}`);
-    if (concurrentRequests < MAX_CONCURRENT_REQUESTS && imageFiles.length > 0) {
-      const unprocessedFiles = imageFiles.filter(file => !processing.has(file) && !altTexts.some(a => a.name === file));
-      if (unprocessedFiles.length > 0) {
-        processImagesConcurrently(unprocessedFiles);
-      }
+    if (concurrentRequests < MAX_CONCURRENT_REQUESTS && imageFiles.some(file => !processing.has(file) && !altTexts.some(a => a.name === file))) {
+      processImagesConcurrently(imageFiles.filter(file => !processing.has(file) && !altTexts.some(a => a.name === file)));
     }
   }
 };
 
-const processImagesConcurrently = (currentFiles) => {
+/**
+ * Process images concurrently by checking if each image file is being processed and starting a new process if not.
+ *
+ * @param {Array} currentFiles - An array of image files to process concurrently.
+ * @return {Promise} A Promise that resolves with the processing results of all image files.
+ */
+const processImagesConcurrently = async (currentFiles) => {
   const availableSlots = MAX_CONCURRENT_REQUESTS - concurrentRequests;
   const filesToProcess = currentFiles.slice(0, availableSlots);
 
-  return Promise.all(
-    filesToProcess.map((imageFile) => {
-      if (!processing.has(imageFile)) { // 确保图片文件没有在处理中
-        return processImage(imageFile);
-      }
-      return Promise.resolve(); // 如果图片已经在处理中，则不启动新的处理
-    })
-  );
+  const promises = filesToProcess.map(imageFile => {
+    if (!processing.has(imageFile)) {
+      return processImage(imageFile);
+    }
+    return Promise.resolve();
+  });
+
+  await Promise.all(promises);
 };
 
-processImagesConcurrently(imageFiles)
-  .then(() => {
-    const cloudflareKVUrl = 'https://api.cloudflare.com/client/v4/accounts/b0dda00db555f237f277259bed93134b/storage/kv/namespaces/da0d1ae333544faea791fb166dfbc01c/values/img-altTexts';
-    const kvOptions = {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${process.env.CF_KV_API_TOKEN}`,
-      },
-      body: JSON.stringify(altTexts),
-    };
+const startProcessing = async () => {
+  await processImagesConcurrently(imageFiles);
 
-    return fetch(cloudflareKVUrl, kvOptions);
-  })
-  .then((res) => res.json())
-  .then((json) => console.log(json))
-  .catch((err) => console.error(`Error: ${err}`));
+  // Store results only when all images are processed
+  const cloudflareKVUrl = 'https://api.cloudflare.com/client/v4/accounts/b0dda00db555f237f277259bed93134b/storage/kv/namespaces/da0d1ae333544faea791fb166dfbc01c/values/img-altTexts';
+  const kvOptions = {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${process.env.CF_KV_API_TOKEN}`,
+    },
+    body: JSON.stringify(altTexts),
+  };
+
+  try {
+    const res = await fetch(cloudflareKVUrl, kvOptions);
+    const json = await res.json();
+    console.log(json);
+  } catch (err) {
+    console.error(`Error: ${err}`);
+  }
+};
+
+startProcessing().catch(err => console.error(`Error: ${err}`));
