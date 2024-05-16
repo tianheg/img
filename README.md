@@ -5,7 +5,8 @@
 ## Features
 
 - AI-generated image captions
-- Astro + PhotoSwipe
+- Use [Astro](https://astro.build/) with [PhotoSwipe](https://photoswipe.com/)
+- Random image
 
 ## Steps
 

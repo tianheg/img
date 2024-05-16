@@ -1,4 +1,5 @@
 ---
+import RandomImage from '../components/RandomImage.astro';
 import PhotoSwipe from '../components/PhotoSwipe.astro';
 import Layout from '../layouts/Layout.astro';
 ---
@@ -7,5 +8,7 @@ import Layout from '../layouts/Layout.astro';
   <h1 class="text-3xl text-center my-20 font-bold underline">
     <a href="https://github.com/tianheg/img" target="_blank">Astro + PhotoSwipe</a>
   </h1>
+  <RandomImage imageFolder="home" />
+  <div class="h-2 dark:bg-gray-200 bg-gray-800 my-2"></div>
   <PhotoSwipe imageFolder="home" />
 </Layout>

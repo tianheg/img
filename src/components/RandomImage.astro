@@ -1,0 +1,27 @@
+---
+import type { ImageMetadata } from 'astro';
+import { Image } from 'astro:assets';
+
+interface Props {
+  imageFolder: string;
+}
+
+const { imageFolder } = Astro.props;
+const images = import.meta.glob<{ default: ImageMetadata }>('/src/assets/*/*');
+const imagePaths = Object.keys(images).filter((imagePath) => {
+  return imagePath.startsWith(`/src/assets/${imageFolder}/`);
+});
+const randomImagePath =
+  imagePaths[Math.floor(Math.random() * imagePaths.length)];
+const image = images[randomImagePath]();
+---
+
+<div class="container mx-auto px-2 pb-2 grid">
+  <h1 class="text-2xl font-bold text-center my-6">Random Image</h1>
+
+  <Image
+    src={image}
+    alt="random img"
+    class="mx-auto w-full object-cover rounded-md"
+  />
+</div>
