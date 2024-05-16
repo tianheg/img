@@ -80,18 +80,32 @@ const processImage = async (imageFile) => {
  * @param {Array} currentFiles - An array of image files to process concurrently.
  * @return {Promise} A Promise that resolves with the processing results of all image files.
  */
-const processImagesConcurrently = async (currentFiles) => {
-  const availableSlots = MAX_CONCURRENT_REQUESTS - concurrentRequests;
-  const filesToProcess = currentFiles.slice(0, availableSlots);
-
-  const promises = filesToProcess.map(imageFile => {
-    if (!processing.has(imageFile)) {
-      return processImage(imageFile);
+const processImagesConcurrently = (currentFiles) => {
+  // 使用 Promise.all 来等待所有当前图片处理完成
+  return Promise.all(
+    currentFiles.map((imageFile) => {
+      // 检查图片是否已经在处理中
+      if (!processing.has(imageFile)) {
+        processing.add(imageFile); // 将图片添加到正在处理的集合中
+        concurrentRequests++;
+        return processImage(imageFile).then(() => {
+          // 处理完成后从正在处理的集合中移除图片
+          processing.delete(imageFile);
+        });
+      }
+      // 如果图片已经在处理中，则返回一个已解决的 Promise
+      return Promise.resolve();
+    })
+  ).then(() => {
+    // 所有当前图片处理完成后，检查是否还有未处理的图片
+    if (concurrentRequests < MAX_CONCURRENT_REQUESTS && imageFiles.some(file => !processing.has(file) && !altTexts.some(a => a.name === file))) {
+      // 获取未处理的图片列表
+      const unprocessedFiles = imageFiles.filter(file => !processing.has(file) && !altTexts.some(a => a.name === file));
+      // 如果有未处理的图片，递归调用 processImagesConcurrently
+      return processImagesConcurrently(unprocessedFiles);
     }
-    return Promise.resolve();
+    // 如果没有未处理的图片，或者达到了最大并发请求数，就不进行递归调用
   });
-
-  await Promise.all(promises);
 };
 
 const startProcessing = async () => {
