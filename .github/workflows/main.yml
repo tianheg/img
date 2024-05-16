@@ -7,6 +7,7 @@ on:
       - main
     paths:
       - 'src/assets/home/**'
+      - 'scripts/img2txt.js'
 
 jobs:
   build:

@@ -37,10 +37,13 @@ const processImage = (imageFile) => {
   })
     .then((response) => response.json())
     .then((data) => {
-      altTexts.push({
-        name: imageFile,
-        altText: data.result.description,
-      });
+      if (data.result.description !== '') {
+        altTexts.push({
+          name: imageFile,
+          altText: data.result.description,
+        });
+      }
+      console.log(data)
       processing.delete(imageFile);
     })
     .catch((error) => {
