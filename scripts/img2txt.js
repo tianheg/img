@@ -17,7 +17,7 @@ const altTexts = [];
 const processing = new Set();
 let concurrentRequests = 0;
 
-const processImage = (imageFile) => {
+const processImage = async (imageFile) => {
   const imagePath = join(imageFolderPath, imageFile);
   const imageBuffer = fs.readFileSync(imagePath);
   const input = {
@@ -26,50 +26,58 @@ const processImage = (imageFile) => {
     max_tokens: 256,
   };
 
-  return fetch(cloudflareAIApiUrl, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${process.env.CF_AI_API_TOKEN}`,
-    },
-    body: JSON.stringify(input),
-    timeout: 15000,
-  })
-    .then((response) => response.json())
-    .then((data) => {
-      if (data.result.description !== '') {
-        altTexts.push({
-          name: imageFile,
-          altText: data.result.description,
-        });
-      }
-      console.log(data)
-      processing.delete(imageFile);
-    })
-    .catch((error) => {
-      if (error.name === 'AbortError') {
-        console.error('Request timed out');
-      } else {
-        console.error(error);
-      }
-      processing.delete(imageFile);
-    })
-    .finally(() => {
-      concurrentRequests--;
-      if (concurrentRequests < MAX_CONCURRENT_REQUESTS && imageFiles.length > 0) {
-        // 只有当有新的图片需要处理时才递归调用
-        const unprocessedFiles = imageFiles.filter(file => !processing.has(file) && !altTexts.some(a => a.name === file));
+  processing.add(imageFile); // 添加到正在处理的 Set 中
+  concurrentRequests++;
+
+  console.log(`Processing image: ${imageFile}, concurrent requests: ${concurrentRequests}`);
+
+  try {
+    const response = await fetch(cloudflareAIApiUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${process.env.CF_AI_API_TOKEN}`,
+      },
+      body: JSON.stringify(input),
+      timeout: 15000,
+    });
+    const data = await response.json();
+
+    // Only add the alt text if it's non-empty and the request was successful
+    if (data.success && data.result.description !== '') {
+      altTexts.push({
+        name: imageFile,
+        altText: data.result.description,
+      });
+    }
+
+    console.log(data);
+  } catch (error) {
+    if (error.name === 'AbortError') {
+      console.error('Request timed out');
+    } else {
+      console.error(error);
+    }
+  } finally {
+    processing.delete(imageFile);
+    concurrentRequests--;
+    console.log(`Finished processing image: ${imageFile}, concurrent requests: ${concurrentRequests}`);
+    if (concurrentRequests < MAX_CONCURRENT_REQUESTS && imageFiles.length > 0) {
+      const unprocessedFiles = imageFiles.filter(file => !processing.has(file) && !altTexts.some(a => a.name === file));
+      if (unprocessedFiles.length > 0) {
         processImagesConcurrently(unprocessedFiles);
       }
-    });
+    }
+  }
 };
 
 const processImagesConcurrently = (currentFiles) => {
+  const availableSlots = MAX_CONCURRENT_REQUESTS - concurrentRequests;
+  const filesToProcess = currentFiles.slice(0, availableSlots);
+
   return Promise.all(
-    currentFiles.map((imageFile) => {
+    filesToProcess.map((imageFile) => {
       if (!processing.has(imageFile)) { // 确保图片文件没有在处理中
-        processing.add(imageFile); // 添加到正在处理的 Set 中
-        concurrentRequests++;
         return processImage(imageFile);
       }
       return Promise.resolve(); // 如果图片已经在处理中，则不启动新的处理
