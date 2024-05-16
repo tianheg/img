@@ -50,7 +50,7 @@ const processImage = async (imageFile) => {
 
     const data = await response.json();
 
-    if (data.success && data.result.description !== '') {
+    if (data.result.description !== '') {
       altTexts.push({
         name: imageFile,
         altText: data.result.description,
