@@ -29,7 +29,8 @@ let concurrentRequests = 0;
  * @return {Promise} A Promise that resolves with the generated caption information.
  */
 const processImage = async (imageFile) => {
-  const imagePath = join(imageFolderPath, imageFile);
+  const imageFolderPath = imageFile.folderPath;
+  const imagePath = join(__dirname, '..', 'src', 'assets', imageFolderPath, imageFile.file);
   const imageBuffer = fs.readFileSync(imagePath);
   const input = {
     image: Array.from(new Uint8Array(imageBuffer)),
@@ -39,9 +40,6 @@ const processImage = async (imageFile) => {
 
   processing.add(imageFile);
   concurrentRequests++;
-
-  console.log(`Processing image: ${imageFile}, concurrent requests: ${concurrentRequests}`);
-
   try {
     const response = await fetch(cloudflareAIApiUrl, {
       method: 'POST',
