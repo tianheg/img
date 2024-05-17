@@ -1,0 +1,13 @@
+---
+import AboutModal from '../components/AboutModal.astro';
+import RandomImage from '../components/RandomImage.astro';
+import PhotoSwipe from '../components/PhotoSwipe.astro';
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout>
+  <AboutModal />
+  <RandomImage imageFolder="internet" />
+  <div class="h-2 dark:bg-gray-200 bg-gray-800 my-2"></div>
+  <PhotoSwipe imageFolder="internet" />
+</Layout>
