@@ -7,11 +7,16 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const imageFolderPath = join(__dirname, '..', 'src', 'assets', 'home');
+const getImageFiles = (folderPath) => {
+  const fullPath = join(__dirname, '..', 'src', 'assets', folderPath);
+  return fs.readdirSync(fullPath).map(file => ({ file, folderPath }));
+};
+const homeImageFiles = getImageFiles('home');
+const internetImageFiles = getImageFiles('internet');
+const imageFiles = [...homeImageFiles, ...internetImageFiles];
 
 const cloudflareAIApiUrl = 'https://api.cloudflare.com/client/v4/accounts/b0dda00db555f237f277259bed93134b/ai/run/@cf/unum/uform-gen2-qwen-500m';
 
-const imageFiles = fs.readdirSync(imageFolderPath);
 const MAX_CONCURRENT_REQUESTS = 5;
 const altTexts = [];
 const processing = new Set();
