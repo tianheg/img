@@ -15,6 +15,11 @@ jobs:
       group: ${{ github.workflow }}-${{ github.ref }}
     steps:
       - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v1
+      - run: bun install
+      - run: bun run build
+
       - name: Publish to Cloudflare Pages
         uses: cloudflare/pages-action@v1
         with:
