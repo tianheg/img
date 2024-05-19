@@ -7,6 +7,7 @@
 - AI-generated image captions
 - Use [Astro](https://astro.build/) with [PhotoSwipe](https://photoswipe.com/)
 - Random image
+- theme change, based on [Daisy Blog](https://github.com/saadeghi/daisy-blog)
 
 ## Steps
 
