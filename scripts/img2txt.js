@@ -55,7 +55,7 @@ const processImage = async (imageFile) => {
 
     if (data.success) {
       altTexts.push({
-        name: imageFile,
+        name: imageFile.file,
         altText: data.result.description,
       });
     }
