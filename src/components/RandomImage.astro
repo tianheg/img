@@ -11,8 +11,10 @@ const images = import.meta.glob<{ default: ImageMetadata }>('/src/assets/*/*');
 const imagePaths = Object.keys(images).filter((imagePath) => {
   return imagePath.startsWith(`/src/assets/${imageFolder}/`);
 });
+
+const { randomBytes } = await import('node:crypto');
 const randomImagePath =
-  imagePaths[Math.floor(Math.random() * imagePaths.length)];
+  imagePaths[Math.floor(randomBytes(1).readUIntBE(0, 1) % imagePaths.length)];
 const image = images[randomImagePath]();
 ---
 
