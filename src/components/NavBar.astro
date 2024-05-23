@@ -1,5 +1,4 @@
 ---
-import ThemeChange from './ThemeChange.astro';
 const hrefHome = "/";
 const hrefInternet = "/internet/";
 const currentPath = Astro.url.pathname;
@@ -20,9 +19,6 @@ const currentPath = Astro.url.pathname;
 				class=`btn glass btn-sm join-item ${currentPath != hrefInternet && "btn-outline"}`
 				>Internet</a
 			>
-		</li>
-		<li>
-			<ThemeChange />
 		</li>
 	</ul>
 </div>
