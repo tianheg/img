@@ -6,7 +6,10 @@ import sharp from 'sharp';
 
 // Path to the source directory
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const srcDir = join(__dirname, '..', 'src', 'assets', 'home');
+const srcDirs = [
+  join(__dirname, '..', 'src', 'assets', 'home'),
+  join(__dirname, '..', 'src', 'assets', 'internet')
+]
 
 // Function to process a single image
 const processImage = (filePath) => {
@@ -39,33 +42,35 @@ const hasExifData = (buffer) => {
 };
 
 // Read the source directory and process each image
-fs.readdir(srcDir, (err, files) => {
-  if (err) {
-    console.error('Error reading source directory:', err);
-    return;
-  }
-
-  for (const file of files) {
-    const filePath = join(srcDir, file);
-
-    // Check if the file is an image based on its extension
-    if (/\.(jpe?g|png|tiff|webp)$/i.test(file)) {
-      fs.readFile(filePath, (err, data) => {
-        if (err) {
-          console.error(`Error reading file ${filePath}:`, err);
-          return;
-        }
-
-        if (hasExifData(data)) {
-          processImage(filePath);
-        } else {
-          console.log(`Skipping image without EXIF data: ${file}`);
-        }
-      });
-    } else {
-      console.log(`Skipping non-image file: ${file}`);
+for (const srcDir of srcDirs) {
+  fs.readdir(srcDir, (err, files) => {
+    if (err) {
+      console.error('Error reading source directory:', err);
+      return;
     }
-  }
-});
+
+    for (const file of files) {
+      const filePath = join(srcDir, file);
+
+      // Check if the file is an image based on its extension
+      if (/\.(jpe?g|png|tiff|webp)$/i.test(file)) {
+        fs.readFile(filePath, (err, data) => {
+          if (err) {
+            console.error(`Error reading file ${filePath}:`, err);
+            return;
+          }
+
+          if (hasExifData(data)) {
+            processImage(filePath);
+          } else {
+            console.log(`Skipping image without EXIF data: ${file}`);
+          }
+        });
+      } else {
+        console.log(`Skipping non-image file: ${file}`);
+      }
+    }
+  });
+}
 
 // see img exif info https://mutiny.cz/exifr/
