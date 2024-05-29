@@ -9,6 +9,10 @@
 - Random image
 - theme change, based on [Daisy Blog](https://github.com/saadeghi/daisy-blog)
 
+## TODO
+
+- [ ] add load more button, not load all imgs at the first time
+
 ## Steps
 
 1. Add an image.
