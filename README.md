@@ -9,6 +9,10 @@
 - Random image
 - theme change, based on [Daisy Blog](https://github.com/saadeghi/daisy-blog)
 
+## Memo
+
+- Don't just post pictures of your surroundings: a new AI model from Stanford University can quickly and accurately figure out where to be in a picture with 92% accuracy.
+
 ## TODO
 
 - [ ] add load more button, not load all imgs at the first time
