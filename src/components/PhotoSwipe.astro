@@ -1,7 +1,7 @@
 ---
 import type { ImageMetadata } from 'astro';
 import { Image, getImage } from 'astro:assets';
-import Cloudflare from 'cloudflare';
+import fetch from 'node-fetch';
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -17,24 +17,23 @@ const imagePaths = Object.keys(images).filter((imagePath) => {
 });
 
 // get alt text from Cloudflare KV
-const client = new Cloudflare({
-	apiToken: process.env.CF_KV_API_TOKEN,
-});
+const url =
+	'https://api.cloudflare.com/client/v4/accounts/b0dda00db555f237f277259bed93134b/storage/kv/namespaces/da0d1ae333544faea791fb166dfbc01c/values/img-altTexts';
 
-const kvOptions = {
-	account_id: 'b0dda00db555f237f277259bed93134b',
+const options = {
+	method: 'GET',
+	headers: {
+		'Content-Type': 'application/json',
+		Authorization: `Bearer ${process.env.CF_KV_API_TOKEN}`,
+	},
 };
+
 const altTexts = async () => {
 	try {
-		const data = await client.kv.namespaces.values.get(
-			'da0d1ae333544faea791fb166dfbc01c',
-			'img-altTexts',
-			kvOptions,
-		);
+		const data = await fetch(url, options).then((res) => res.json());
 		return JSON.parse(JSON.stringify(data));
 	} catch (error) {
 		console.error(error);
-		return [];
 	}
 };
 

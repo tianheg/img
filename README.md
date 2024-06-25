@@ -51,6 +51,8 @@ key code change:
 - return JSON.parse(data);
 ```
 
+Old way is use cloudflare npm lib, new way use REST API.
+
 data sample:
 
 ```json
