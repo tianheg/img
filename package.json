@@ -10,7 +10,7 @@
   "devDependencies": {
     "@astrojs/check": "0.7.0",
     "@astrojs/tailwind": "^5.1.0",
-    "astro": "4.9.1",
+    "astro": "4.11.1",
     "cloudflare": "^3.2.0",
     "daisyui": "^4.11.1",
     "dotenv": "^16.4.5",
