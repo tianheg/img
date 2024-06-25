@@ -32,10 +32,9 @@ const altTexts = async () => {
 			kvOptions,
 		);
 		console.log(data)
-		return JSON.parse(data);
+		return JSON.parse(JSON.stringify(data));
 	} catch (error) {
 		console.error(error);
-		return [];
 	}
 };
 
