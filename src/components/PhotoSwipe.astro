@@ -27,7 +27,7 @@ const options = {
 const altTexts = async () => {
 	try {
 		const data = await fetch(url, options).then((res) => res.json());
-		return JSON.parse(data as string);
+		return JSON.parse(JSON.stringify(data));
 	} catch (error) {
 		console.error(error);
 	}
