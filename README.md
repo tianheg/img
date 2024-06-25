@@ -13,6 +13,50 @@
 
 - Don't just post pictures of your surroundings: a new AI model from Stanford University can quickly and accurately figure out where to be in a picture with 92% accuracy.
 
+## Problems solved
+
+### Cloudflare Pages deploy failure, locally build success
+
+error logs:
+
+```log
+23:58:47.472	 generating static routes 
+23:58:47.492	15:58:47 ▶ src/pages/internet.astro
+23:58:48.324	15:58:47   └─ /internet/index.htmlSyntaxError: Unexpected token 'o', "[object Obj"... is not valid JSON
+23:58:48.324	    at JSON.parse (<anonymous>)
+23:58:48.324	    at altTexts (file:///opt/buildhome/repo/dist/chunks/_layout_Dry1hoQ2.mjs:1045:19)
+23:58:48.324	    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+23:58:48.325	    at async file:///opt/buildhome/repo/dist/chunks/_layout_Dry1hoQ2.mjs:1050:23
+23:58:48.364	 (+872ms)
+23:58:48.366	15:58:48 ▶ src/pages/index.astro
+23:58:48.548	15:58:48   └─ /index.htmlSyntaxError: Unexpected token 'o', "[object Obj"... is not valid JSON
+23:58:48.549	    at JSON.parse (<anonymous>)
+23:58:48.549	    at altTexts (file:///opt/buildhome/repo/dist/chunks/_layout_Dry1hoQ2.mjs:1045:19)
+23:58:48.549	    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+23:58:48.549	    at async file:///opt/buildhome/repo/dist/chunks/_layout_Dry1hoQ2.mjs:1050:23
+23:58:48.628	 (+262ms)
+23:58:48.628	15:58:48 ✓ Completed in 1.16s.
+```
+
+key code change:
+
+```diff
++ const data = await fetch(url, options).then((res) => res.json());
++ return JSON.parse(JSON.stringify(data));
+- const data = await client.kv.namespaces.values.get(
+-	  'da0d1ae333544faea791fb166dfbc01c',
+-		'img-altTexts',
+-		kvOptions,
+-	);
+- return JSON.parse(data);
+```
+
+data sample:
+
+```json
+[{"name":"trainspotting-0.jpeg","altText":"A man with short, red hair is in a close-up shot, wearing a gray jacket and holding a red object in his hand. The background is blurred, focusing on the man."},{"name":"manuel-osorio-manrique-de-zuñiga.jpeg","altText":"A young girl in a red outfit stands next to a bird cage, holding a string and a bird. A cat is nearby, and a bird is perched on a cage. The background is a dark green color."},{"name":"jiachezi.jpg","altText":"An old wooden cart with two large wheels is parked in a field, surrounded by tall grass and bare trees. The cart has a wooden frame and is positioned in the center of the image."},{"name":"night-painting.jpeg","altText":"A serene landscape painting depicts a tranquil river reflecting the moon's light, with a group of cows grazing on a hill in the foreground. The artist uses a realistic style, capturing the natural elements and the moon's light in a dreamy quality."}]
+```
+
 ## TODO
 
 - [ ] add load more button, not load all imgs at the first time
