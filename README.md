@@ -41,8 +41,9 @@ error logs:
 key code change:
 
 ```diff
-+ const data = await fetch(url, options).then((res) => res.json());
-+ return JSON.parse(JSON.stringify(data));
++ const response = await fetch(url, options);
++	const data = await response.json();
++	return data;
 - const data = await client.kv.namespaces.values.get(
 -	  'da0d1ae333544faea791fb166dfbc01c',
 -		'img-altTexts',
@@ -58,6 +59,68 @@ data sample:
 ```json
 [{"name":"trainspotting-0.jpeg","altText":"A man with short, red hair is in a close-up shot, wearing a gray jacket and holding a red object in his hand. The background is blurred, focusing on the man."},{"name":"manuel-osorio-manrique-de-zuñiga.jpeg","altText":"A young girl in a red outfit stands next to a bird cage, holding a string and a bird. A cat is nearby, and a bird is perched on a cage. The background is a dark green color."},{"name":"jiachezi.jpg","altText":"An old wooden cart with two large wheels is parked in a field, surrounded by tall grass and bare trees. The cart has a wooden frame and is positioned in the center of the image."},{"name":"night-painting.jpeg","altText":"A serene landscape painting depicts a tranquil river reflecting the moon's light, with a group of cows grazing on a hill in the foreground. The artist uses a realistic style, capturing the natural elements and the moon's light in a dreamy quality."}]
 ```
+
+The changed code is a little problem:
+
+not good:
+
+```js
+const data = await fetch(url, options).then((res) => res.json());
+return JSON.parse(JSON.stringify(data));
+```
+
+good:
+
+```js
+const response = await fetch(url, options);
+const data = await response.json();
+return data;
+```
+
+or:
+
+```js
+fetch(url, options)
+  .then(response => response.json())
+  .then(data => return data)
+```
+
+Because `fetch().then()` and `await fetch()` can only choose one of them.
+
+<details>
+<summary>Explain <code>fetch().then()</code> and <code>await fetch()</code></summary>
+<p>fetch().then() is a promise-based approach where fetch() returns a Promise that resolves to the Response to that request. Example:</p>
+<pre>
+fetch('https://api.example.com/data')
+  .then(response => {
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    return response.json();
+  })
+  .then(data => {
+    return data;
+  })
+  .catch(error => {
+    console.error('There was a problem with the fetch operation:', error);
+  })
+</pre>
+<p>await fetch() is used in conjunction with async function to pause the execution of the function until the Promise is settled(that is, untilthe request is complete). Use await makes the code easier to read. Example:</p>
+<pre>
+async function fetchData() {
+  try {
+    const response = await fetch('https://api.example.com/data');
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    const data = await response.json();
+    return data;
+  } catch(error) {
+    console.error('There was a problem with the fetch operation:', error);
+  }
+}
+</pre>
+</details>
 
 ## TODO
 

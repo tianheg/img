@@ -9,6 +9,10 @@ dotenv.config();
 interface Props {
 	imageFolder: string;
 }
+interface AltTextItem {
+	name: string;
+	altText: string;
+}
 
 const { imageFolder } = Astro.props;
 const images = import.meta.glob<{ default: ImageMetadata }>('/src/assets/*/*');
@@ -28,13 +32,18 @@ const options = {
 	},
 };
 
-const altTexts = async () => {
+const altTexts = async (): Promise<AltTextItem[]> => {
 	try {
 		const response = await fetch(url, options);
-		const data = await response.json();
+		if (!response.ok) throw new Error('Network response was not ok');
+		const data = (await response.json()) as AltTextItem[];
 		return data;
 	} catch (error) {
-		console.error(error);
+		console.error(
+			'There was a problem with the fetch problem operation:',
+			error,
+		);
+		return [];
 	}
 };
 
@@ -54,9 +63,8 @@ const altTextData = await altTexts();
 					width: 1920,
 				});
 
-				const altText = altTextData?.find(
-					(item: { name: string; altText: string }) =>
-						item.name === imagePath.split('/').pop(),
+				const altText = altTextData.find(
+					(item: AltTextItem) => item.name === imagePath.split('/').pop(),
 				)?.altText;
 
 				return (
