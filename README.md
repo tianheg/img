@@ -42,12 +42,12 @@ key code change:
 
 ```diff
 + const response = await fetch(url, options);
-+	const data = await response.json();
-+	return data;
++ const data = await response.json();
++ return data;
 - const data = await client.kv.namespaces.values.get(
--	  'da0d1ae333544faea791fb166dfbc01c',
--		'img-altTexts',
--		kvOptions,
+-   'da0d1ae333544faea791fb166dfbc01c',
+-   'img-altTexts',
+-   kvOptions,
 -	);
 - return JSON.parse(data);
 ```
