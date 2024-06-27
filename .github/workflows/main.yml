@@ -6,7 +6,7 @@ on:
     branches:
       - main
     paths:
-      - 'src/assets/home/**'
+      - 'src/assets/**'
       - 'scripts/img2txt.js'
 
 jobs:
