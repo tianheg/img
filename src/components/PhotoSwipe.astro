@@ -15,7 +15,9 @@ const imagePaths = Object.keys(images).filter((imagePath) => {
 >
 	{
 		await Promise.all(
-			imagePaths.map(async (imagePath) => {
+		imagePaths
+				.map((imagePath) => ({ imagePath, weight: Math.random() }))
+				.sort((a, b) => a.weight - b.weight).map(async ({imagePath}) => {
 				let image = images[imagePath]();
 				let optimizedImage = await getImage({
 					src: image,
@@ -28,7 +30,7 @@ const imagePaths = Object.keys(images).filter((imagePath) => {
 						data-pswp-width={optimizedImage.attributes.width}
 						data-pswp-height={optimizedImage.attributes.height}
 						target="_blank"
-						class="overflow-hidden rounded-md border-[1px] border-primary hover:border-secondary"
+						class="overflow-hidden rounded-md"
 					>
 						<Image
 							src={image}
