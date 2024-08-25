@@ -1,61 +1,12 @@
 ---
 import type { ImageMetadata } from 'astro';
 import { Image, getImage } from 'astro:assets';
-import fetch from 'node-fetch';
-import dotenv from 'dotenv';
-
-dotenv.config();
-
-interface Props {
-	imageFolder: string;
-}
-interface AltTextItem {
-	name: string;
-	altText: string;
-}
 
 const { imageFolder } = Astro.props;
 const images = import.meta.glob<{ default: ImageMetadata }>('/src/assets/*/*');
 const imagePaths = Object.keys(images).filter((imagePath) => {
 	return imagePath.startsWith(`/src/assets/${imageFolder}/`);
 });
-
-// get alt text from Cloudflare KV
-const url =
-	'https://api.cloudflare.com/client/v4/accounts/b0dda00db555f237f277259bed93134b/storage/kv/namespaces/da0d1ae333544faea791fb166dfbc01c/values/img-altTexts';
-
-const options = {
-	method: 'GET',
-	headers: {
-		'Content-Type': 'application/json',
-		Authorization: `Bearer ${process.env.CF_KV_API_TOKEN}`,
-	},
-};
-
-const altTexts = async (): Promise<AltTextItem[]> => {
-	try {
-		const response = await fetch(url, options);
-		if (!response.ok) {
-			if (response.status === 404) {
-				throw new Error('Data not found');
-			} else if (response.status === 500) {
-				throw new Error('Server error');
-			} else {
-				throw new Error('Network response was not ok');
-			}
-		}
-		const data = (await response.json()) as AltTextItem[];
-		return data;
-	} catch (error) {
-		console.error(
-			'There was a problem with the fetch problem operation:',
-			error,
-		);
-		return [];
-	}
-};
-
-const altTextData = await altTexts();
 ---
 
 <div
@@ -71,10 +22,6 @@ const altTextData = await altTexts();
 					width: 1920,
 				});
 
-				const altText = altTextData.find(
-					(item: AltTextItem) => item.name === imagePath.split('/').pop(),
-				)?.altText;
-
 				return (
 					<a
 						href={optimizedImage.src}
@@ -85,7 +32,7 @@ const altTextData = await altTexts();
 					>
 						<Image
 							src={image}
-							alt={altText || 'an image(fallback text)'}
+							alt=''
 							height={350}
 							class={
 								'object-cover w-full grayscale-[80%] hover:grayscale-0 transition duration-300 ease-in-out aspect-[3/2]'
@@ -100,9 +47,7 @@ const altTextData = await altTexts();
 
 <script>
 	import PhotoSwipeLightbox from 'photoswipe/lightbox';
-	import PhotoSwipeDynamicCaption from 'photoswipe-dynamic-caption-plugin';
 	import 'photoswipe/style.css';
-	import 'photoswipe-dynamic-caption-plugin/photoswipe-dynamic-caption-plugin.css';
 
 	let lightbox: PhotoSwipeLightbox;
 
@@ -111,22 +56,8 @@ const altTextData = await altTexts();
 			gallery: '#gallery',
 			children: 'a',
 			pswpModule: () => import('photoswipe'),
-			paddingFn: () => {
-				return {
-					top: 20,
-					bottom: 20,
-					left: 10,
-					right: 10,
-				};
-			},
+			
 		});
-
-		const captionPlugin = new PhotoSwipeDynamicCaption(lightbox, {
-			type: 'auto',
-		});
-		captionContent: (slide: any) => {
-			return slide.data.element.querySelector('img').getAttribute('alt');
-		};
 
 		lightbox.init();
 	});
