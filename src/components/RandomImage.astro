@@ -1,18 +1,18 @@
 ---
-import type { ImageMetadata } from 'astro';
-import { Image } from 'astro:assets';
+import { Image } from "astro:assets";
+import type { ImageMetadata } from "astro";
 
 interface Props {
   imageFolder: string;
 }
 
 const { imageFolder } = Astro.props;
-const images = import.meta.glob<{ default: ImageMetadata }>('/src/assets/*/*');
+const images = import.meta.glob<{ default: ImageMetadata }>("/src/assets/*/*");
 const imagePaths = Object.keys(images).filter((imagePath) => {
   return imagePath.startsWith(`/src/assets/${imageFolder}/`);
 });
 
-const { randomBytes } = await import('node:crypto');
+const { randomBytes } = await import("node:crypto");
 const randomImagePath =
   imagePaths[Math.floor(randomBytes(1).readUIntBE(0, 1) % imagePaths.length)];
 const image = images[randomImagePath]();

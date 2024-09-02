@@ -1,21 +1,22 @@
-import fs from 'node:fs';
-import { fileURLToPath } from 'node:url';
-import { dirname, join } from 'node:path';
-import fetch from 'node-fetch';
-import dotenv from 'dotenv';
+import fs from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
+import dotenv from "dotenv";
+import fetch from "node-fetch";
 
 dotenv.config();
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const getImageFiles = (folderPath) => {
-  const fullPath = join(__dirname, '..', 'src', 'assets', folderPath);
-  return fs.readdirSync(fullPath).map(file => ({ file, folderPath }));
+  const fullPath = join(__dirname, "..", "src", "assets", folderPath);
+  return fs.readdirSync(fullPath).map((file) => ({ file, folderPath }));
 };
-const homeImageFiles = getImageFiles('home');
-const internetImageFiles = getImageFiles('internet');
+const homeImageFiles = getImageFiles("home");
+const internetImageFiles = getImageFiles("internet");
 const imageFiles = [...homeImageFiles, ...internetImageFiles];
 
-const cloudflareAIApiUrl = 'https://api.cloudflare.com/client/v4/accounts/b0dda00db555f237f277259bed93134b/ai/run/@cf/unum/uform-gen2-qwen-500m';
+const cloudflareAIApiUrl =
+  "https://api.cloudflare.com/client/v4/accounts/b0dda00db555f237f277259bed93134b/ai/run/@cf/unum/uform-gen2-qwen-500m";
 
 const MAX_CONCURRENT_REQUESTS = 5;
 const altTexts = [];
@@ -30,11 +31,18 @@ let concurrentRequests = 0;
  */
 const processImage = async (imageFile) => {
   const imageFolderPath = imageFile.folderPath;
-  const imagePath = join(__dirname, '..', 'src', 'assets', imageFolderPath, imageFile.file);
+  const imagePath = join(
+    __dirname,
+    "..",
+    "src",
+    "assets",
+    imageFolderPath,
+    imageFile.file,
+  );
   const imageBuffer = fs.readFileSync(imagePath);
   const input = {
     image: Array.from(new Uint8Array(imageBuffer)),
-    prompt: 'Generate a caption for this image.',
+    prompt: "Generate a caption for this image.",
     max_tokens: 256,
   };
 
@@ -42,9 +50,9 @@ const processImage = async (imageFile) => {
   concurrentRequests++;
   try {
     const response = await fetch(cloudflareAIApiUrl, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
         Authorization: `Bearer ${process.env.CF_AI_API_TOKEN}`,
       },
       body: JSON.stringify(input),
@@ -62,17 +70,30 @@ const processImage = async (imageFile) => {
 
     console.log(data);
   } catch (error) {
-    if (error.name === 'AbortError') {
-      console.error('Request timed out');
+    if (error.name === "AbortError") {
+      console.error("Request timed out");
     } else {
       console.error(error);
     }
   } finally {
     processing.delete(imageFile);
     concurrentRequests--;
-    console.log(`Finished processing image: ${imageFile}, concurrent requests: ${concurrentRequests}`);
-    if (concurrentRequests < MAX_CONCURRENT_REQUESTS && imageFiles.some(file => !processing.has(file) && !altTexts.some(a => a.name === file))) {
-      processImagesConcurrently(imageFiles.filter(file => !processing.has(file) && !altTexts.some(a => a.name === file)));
+    console.log(
+      `Finished processing image: ${imageFile}, concurrent requests: ${concurrentRequests}`,
+    );
+    if (
+      concurrentRequests < MAX_CONCURRENT_REQUESTS &&
+      imageFiles.some(
+        (file) =>
+          !processing.has(file) && !altTexts.some((a) => a.name === file),
+      )
+    ) {
+      processImagesConcurrently(
+        imageFiles.filter(
+          (file) =>
+            !processing.has(file) && !altTexts.some((a) => a.name === file),
+        ),
+      );
     }
   }
 };
@@ -98,12 +119,21 @@ const processImagesConcurrently = (currentFiles) => {
       }
       // 如果图片已经在处理中，则返回一个已解决的 Promise
       return Promise.resolve();
-    })
+    }),
   ).then(() => {
     // 所有当前图片处理完成后，检查是否还有未处理的图片
-    if (concurrentRequests < MAX_CONCURRENT_REQUESTS && imageFiles.some(file => !processing.has(file) && !altTexts.some(a => a.name === file))) {
+    if (
+      concurrentRequests < MAX_CONCURRENT_REQUESTS &&
+      imageFiles.some(
+        (file) =>
+          !processing.has(file) && !altTexts.some((a) => a.name === file),
+      )
+    ) {
       // 获取未处理的图片列表
-      const unprocessedFiles = imageFiles.filter(file => !processing.has(file) && !altTexts.some(a => a.name === file));
+      const unprocessedFiles = imageFiles.filter(
+        (file) =>
+          !processing.has(file) && !altTexts.some((a) => a.name === file),
+      );
       // 如果有未处理的图片，递归调用 processImagesConcurrently
       return processImagesConcurrently(unprocessedFiles);
     }
@@ -115,11 +145,12 @@ const startProcessing = async () => {
   await processImagesConcurrently(imageFiles);
 
   // Store results only when all images are processed
-  const cloudflareKVUrl = 'https://api.cloudflare.com/client/v4/accounts/b0dda00db555f237f277259bed93134b/storage/kv/namespaces/da0d1ae333544faea791fb166dfbc01c/values/img-altTexts';
+  const cloudflareKVUrl =
+    "https://api.cloudflare.com/client/v4/accounts/b0dda00db555f237f277259bed93134b/storage/kv/namespaces/da0d1ae333544faea791fb166dfbc01c/values/img-altTexts";
   const kvOptions = {
-    method: 'PUT',
+    method: "PUT",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
       Authorization: `Bearer ${process.env.CF_KV_API_TOKEN}`,
     },
     body: JSON.stringify(altTexts),
@@ -134,4 +165,4 @@ const startProcessing = async () => {
   }
 };
 
-startProcessing().catch(err => console.error(`Error: ${err}`));
+startProcessing().catch((err) => console.error(`Error: ${err}`));

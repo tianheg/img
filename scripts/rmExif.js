@@ -1,31 +1,30 @@
-import fs from 'node:fs';
-import { fileURLToPath } from 'node:url';
-import { dirname, join } from 'node:path';
-import exifParser from 'exif-parser';
-import sharp from 'sharp';
+import fs from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
+import exifParser from "exif-parser";
+import sharp from "sharp";
 
 // Path to the source directory
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const srcDirs = [
-  join(__dirname, '..', 'src', 'assets', 'home'),
-  join(__dirname, '..', 'src', 'assets', 'internet')
-]
+  join(__dirname, "..", "src", "assets", "home"),
+  join(__dirname, "..", "src", "assets", "internet"),
+];
 
 // Function to process a single image
 const processImage = (filePath) => {
   sharp(filePath)
     .toBuffer({ resolveWithObject: true })
     .then(({ data, info }) => {
-      sharp(data)
-        .toFile(filePath, (err, info) => {
-          if (err) {
-            console.error(`Error processing image ${filePath}:`, err);
-          } else {
-            console.log(`Successfully removed EXIF data from ${filePath}:`, info);
-          }
-        });
+      sharp(data).toFile(filePath, (err, info) => {
+        if (err) {
+          console.error(`Error processing image ${filePath}:`, err);
+        } else {
+          console.log(`Successfully removed EXIF data from ${filePath}:`, info);
+        }
+      });
     })
-    .catch(err => {
+    .catch((err) => {
       console.error(`Error loading image ${filePath}:`, err);
     });
 };
@@ -45,7 +44,7 @@ const hasExifData = (buffer) => {
 for (const srcDir of srcDirs) {
   fs.readdir(srcDir, (err, files) => {
     if (err) {
-      console.error('Error reading source directory:', err);
+      console.error("Error reading source directory:", err);
       return;
     }
 
