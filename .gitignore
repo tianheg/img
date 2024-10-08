@@ -25,3 +25,4 @@ pnpm-debug.log*
 
 .private/
 bun.lockb
+pnpm-lock.yaml
