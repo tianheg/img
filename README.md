@@ -4,14 +4,10 @@
 
 ## Features
 
-- AI-generated image captions
+- ~~AI-generated image captions~~
 - Use [Astro](https://astro.build/) with [PhotoSwipe](https://photoswipe.com/)
 - Random image
 - theme change, based on [Daisy Blog](https://github.com/saadeghi/daisy-blog)
-
-## Memo
-
-- Don't just post pictures of your surroundings: a new AI model from Stanford University can quickly and accurately figure out where to be in a picture with 92% accuracy.
 
 ## Problems solved
 
