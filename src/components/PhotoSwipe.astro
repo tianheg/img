@@ -11,13 +11,13 @@ const imagePaths = Object.keys(images).filter((imagePath) => {
 
 <div
 	id="gallery"
-	class="container mx-auto px-2 pb-2 grid grid-cols-2 md:grid-cols-3 gap-2"
+	class="container mx-auto px-2 pb-2 grid grid-cols-2 md:grid-cols-3 gap-2 transform-container"
 >
 	{
 		await Promise.all(
 		imagePaths
 				.map((imagePath) => ({ imagePath, weight: Math.random() }))
-				.sort((a, b) => a.weight - b.weight).map(async ({imagePath}) => {
+				.map(async ({imagePath}) => {
 				let image = images[imagePath]();
 				let optimizedImage = await getImage({
 					src: image,
@@ -37,7 +37,7 @@ const imagePaths = Object.keys(images).filter((imagePath) => {
 							alt=''
 							height={350}
 							class={
-								'object-cover w-full grayscale-[80%] hover:grayscale-0 transition duration-300 ease-in-out aspect-[3/2]'
+								'object-cover w-full grayscale-[80%] hover:grayscale-0 transition duration-300 ease-in-out aspect-[3/2] custom-image-effect'
 							}
 						/>
 					</a>
@@ -62,36 +62,40 @@ const imagePaths = Object.keys(images).filter((imagePath) => {
 		});
 
   lightbox.on('uiRegister', function() {
-  lightbox.pswp.ui.registerElement({
-    name: 'download-button',
-    order: 8,
-    isButton: true,
-    tagName: 'a',
+    if (lightbox.pswp && lightbox.pswp.ui) {
+      lightbox.pswp.ui.registerElement({
+        name: 'download-button',
+        order: 8,
+        isButton: true,
+        tagName: 'a',
 
-    // SVG with outline
-    html: {
-      isCustomSVG: true,
-      inner: '<path d="M20.5 14.3 17.1 18V10h-2.2v7.9l-3.4-3.6L10 16l6 6.1 6-6.1ZM23 23H9v2h14Z" id="pswp__icn-download"/>',
-      outlineID: 'pswp__icn-download'
-    },
+        // SVG with outline
+        html: {
+          isCustomSVG: true,
+          inner: '<path d="M20.5 14.3 17.1 18V10h-2.2v7.9l-3.4-3.6L10 16l6 6.1 6-6.1ZM23 23H9v2h14Z" id="pswp__icn-download"/>',
+          outlineID: 'pswp__icn-download'
+        },
 
-    // Or provide full svg:
-    // html: '<svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true" class="pswp__icn"><path d="M20.5 14.3 17.1 18V10h-2.2v7.9l-3.4-3.6L10 16l6 6.1 6-6.1ZM23 23H9v2h14Z" /></svg>',
+        // Or provide full svg:
+        // html: '<svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true" class="pswp__icn"><path d="M20.5 14.3 17.1 18V10h-2.2v7.9l-3.4-3.6L10 16l6 6.1 6-6.1ZM23 23H9v2h14Z" /></svg>',
 
-    // Or provide any other markup:
-    // html: '<i class="fa-solid fa-download"></i>' 
+        // Or provide any other markup:
+        // html: '<i class="fa-solid fa-download"></i>' 
 
-    onInit: (el, pswp) => {
-      el.setAttribute('download', '');
-      el.setAttribute('target', '_blank');
-      el.setAttribute('rel', 'noopener');
+        onInit: (el, pswp) => {
+          el.setAttribute('download', '');
+          el.setAttribute('target', '_blank');
+          el.setAttribute('rel', 'noopener');
 
-      pswp.on('change', () => {
-        console.log('change');
-        el.href = pswp.currSlide.data.src;
+          pswp.on('change', () => {
+            console.log('change');
+            if (pswp.currSlide && pswp.currSlide.data.src) {
+              (el as HTMLAnchorElement).href = pswp.currSlide.data.src;
+            }
+          });
+        }
       });
     }
-  });
   });
 
 		lightbox.init();
@@ -101,3 +105,15 @@ const imagePaths = Object.keys(images).filter((imagePath) => {
 		lightbox.destroy();
 	});
 </script>
+
+<style>
+.custom-image-effect {
+    transform: scale(1.05);
+    transition: transform 0.3s ease;
+}
+
+.custom-image-effect:hover {
+    transform: scale(1.1);
+}
+</style>
+
