@@ -1,6 +1,7 @@
 {
   "name": "img",
   "type": "module",
+  "private": true,
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
@@ -8,16 +9,18 @@
     "exif": "bun run scripts/rmExif.js",
     "lint": "biome check --write ."
   },
+  "dependencies": {
+    "photoswipe": "^5.4.4"
+  },
   "devDependencies": {
     "@astrojs/check": "0.9.4",
-    "@astrojs/tailwind": "^5.1.4",
     "@biomejs/biome": "^1.9.4",
+    "@tailwindcss/vite": "^4.1.4",
     "astro": "5.1.1",
-    "daisyui": "^4.12.22",
+    "daisyui": "^5.0.28",
     "exif-parser": "^0.1.12",
-    "photoswipe": "^5.4.4",
     "sharp": "^0.33.5",
-    "tailwindcss": "^3.4.17",
+    "tailwindcss": "^4.1.4",
     "typescript": "^5.7.2"
   }
 }
