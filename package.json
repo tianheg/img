@@ -15,12 +15,12 @@
   "devDependencies": {
     "@astrojs/check": "0.9.4",
     "@biomejs/biome": "^1.9.4",
-    "@tailwindcss/vite": "^4.1.8",
-    "astro": "5.9.1",
+    "@tailwindcss/vite": "^4.1.10",
+    "astro": "5.9.3",
     "daisyui": "^5.0.43",
     "exif-parser": "^0.1.12",
     "sharp": "^0.34.2",
-    "tailwindcss": "^4.1.8",
+    "tailwindcss": "^4.1.10",
     "typescript": "^5.7.2"
   }
 }
