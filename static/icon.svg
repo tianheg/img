@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 709 709">
+  <style>
+    g {
+      fill: white;
+    }      
+    path.a {
+      fill: #1e1e1e;
+    }
+    path:not(.a) { fill: none; }
+
+    @media (prefers-color-scheme: dark) {
+      path:not(.a) { fill: white; }
+    }
+  </style>
+  <path d="M0 0h709v709H0z"/>
+
+  <g stroke-linecap="round">
+    <path class="a" d="M161 183h186v22H161"/>
+    <path stroke="#1e1e1e" stroke-width="4" d="M161 183h186m-186 0h186m0 0v22m0-22v22m0 0H161m186 0H161m0 0v-22m0 22v-22"/>
+  </g>
+  <g stroke-linecap="round">
+    <path class="a" d="M351 183h189v19H351"/>
+    <path stroke="#1e1e1e" stroke-width="4" d="M351 183h189m-189 0h189m0 0v19m0-19v19m0 0H351m189 0H351m0 0v-19m0 19v-19"/>
+  </g>
+  <g stroke-linecap="round">
+    <path class="a" d="M354 205h186v22H354"/>
+    <path stroke="#1e1e1e" stroke-width="4" d="M354 205h186m-186 0h186m0 0v22m0-22v22m0 0H354m186 0H354m0 0v-22m0 22v-22"/>
+  </g>
+  <g stroke-linecap="round">
+    <path class="a" d="M287 206h133v446H287"/>
+    <path stroke="#1e1e1e" stroke-width="4" d="M287 206h133m-133 0h133m0 0v446m0-446v446m0 0H287m133 0H287m0 0V206m0 446V206"/>
+  </g>
+  <g stroke-linecap="round">
+    <path class="a" d="M212 405h71v25h-71"/>
+    <path stroke="#1e1e1e" stroke-width="4" d="M212 405h71m-71 0h71m0 0v25m0-25v25m0 0h-71m71 0h-71m0 0v-25m0 25v-25"/>
+  </g>
+  <g stroke-linecap="round">
+    <path class="a" d="M423 420h47v231h-47"/>
+    <path stroke="#1e1e1e" stroke-width="4" d="M423 420h47m-47 0h47m0 0v231m0-231v231m0 0h-47m47 0h-47m0 0V420m0 231V420"/>
+  </g>
+</svg>

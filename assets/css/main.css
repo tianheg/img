@@ -1,0 +1,46 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+@plugin "daisyui" {
+  /* biome-ignore lint/correctness/noUnknownProperty: <explanation> */
+  themes: silk --light, sunset --prefersdark;
+}
+@plugin "daisyui/theme" {
+  /* biome-ignore lint/correctness/noUnknownProperty: <explanation> */
+  name: "silk";
+  /* biome-ignore lint/correctness/noUnknownProperty: <explanation> */
+  default: true;
+  --color-base-100: oklch(97% 0.0035 67.78);
+}
+
+/* Satoshi https://fontshare.com/fonts/satoshi */
+@font-face {
+  font-family: "Satoshi";
+  src: url("/fonts/Satoshi-Variable.woff2") format("woff2"),
+    url("/fonts/Satoshi-Variable.woff") format("woff");
+  font-weight: 400 700;
+  font-display: swap;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Satoshi";
+  src: url("/fonts/Satoshi-VariableItalic.woff2") format("woff2"),
+    url("/fonts/Satoshi-VariableItalic.woff") format("woff");
+  font-weight: 400 700;
+  font-display: swap;
+  font-style: italic;
+}
+
+body {
+  font-family:
+    "Satoshi", -apple-system, system-ui, BlinkMacSystemFont, "Noto Serif SC", Arial, "Amstelvar", "Josefin Sans", "Hiragino Sans GB", "Microsoft Yahei", "ST Heiti", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  margin: auto;
+  padding: 20px;
+  max-width: 720px;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+header {
+  background-color: var(--color-base-100);
+}

@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8"/>
+
+  {{ hugo.Generator }}
+
+  <!-- https://web.dev/color-scheme/ -->
+  <meta name="color-scheme" content="light dark">
+  <!-- Responsive Web Design -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+  <title>{{- block "title" . }}{{ with .Title }}{{ . }} | {{ end }}{{ .Site.Title }}{{- end }}</title>
+
+  <!-- CSS -->
+  {{- partialCached "style.html" . -}}
+
+  <link rel="canonical" href="{{ .Permalink }}"/>
+
+</head>
+
+<body class="prose md:prose-base lg:prose-sm prose-a:no-underline prose-a:hover:underline">
+
+  <header class="sticky py-4 top-0 z-1">
+    {{- partial "header.html" . -}}
+  </header>
+  <main class="">
+    {{- block "main" . }}{{- end }}
+  </main>
+
+
+  {{- partial "service-worker.html" . -}}
+
+  <script type="module">
+    import PhotoSwipeLightbox from '/photoswipe/photoswipe-lightbox.esm.js';
+import PhotoSwipeDynamicCaption from '/photoswipe/photoswipe-dynamic-caption-plugin.esm.js';
+
+let lightbox = null;
+
+function initPhotoSwipe() {
+  // Destroy existing lightbox if it exists
+  if (lightbox) {
+    lightbox.destroy();
+    lightbox = null;
+  }
+
+  // Create wrapper links for all images in main
+  const images = document.querySelectorAll('main img');
+
+  if (images.length === 0) {
+    console.log('No images found in main element');
+    return;
+  }
+
+  // Process each image to wrap it in a clickable link
+  images.forEach((img, index) => {
+    // Skip if already wrapped
+    if (img.parentElement.tagName === 'A' && img.parentElement.hasAttribute('data-pswp-src')) {
+      return;
+    }
+
+    // Create wrapper link
+    const link = document.createElement('a');
+    link.href = img.src;
+    link.setAttribute('data-pswp-src', img.src);
+    link.setAttribute('data-pswp-width', img.naturalWidth || 1200);
+    link.setAttribute('data-pswp-height', img.naturalHeight || 800);
+
+    // Get caption from figcaption or alt text
+    let caption = '';
+    const figure = img.closest('figure');
+    if (figure) {
+      const figcaption = figure.querySelector('figcaption');
+      if (figcaption) {
+        caption = figcaption.innerHTML.trim();
+      }
+    }
+    if (!caption) {
+      caption = img.alt || img.title || '';
+    }
+
+    if (caption) {
+      link.setAttribute('data-pswp-caption', caption);
+    }
+
+    // Insert link before the image and move image into link
+    img.parentNode.insertBefore(link, img);
+    link.appendChild(img);
+
+    // Add cursor pointer style
+    img.style.cursor = 'zoom-in';
+  });
+
+  // Initialize PhotoSwipe Lightbox
+  lightbox = new PhotoSwipeLightbox({
+    gallery: 'main',
+    children: 'a[data-pswp-src]',
+    pswpModule: () => import('/photoswipe/photoswipe.esm.js'),
+
+    // PhotoSwipe options
+    showHideAnimationType: 'fade',
+    spacing: 0.1,
+    allowPanToNext: true,
+
+    // Enable zoom
+    zoom: true,
+    maxZoomLevel: 4,
+
+    // Background and UI
+    bgOpacity: 0.9,
+    closeOnVerticalDrag: true,
+
+    // Preload nearby slides
+    preload: [1, 1],
+
+    // Data source function
+    dataSource: (index) => {
+      const links = document.querySelectorAll('main a[data-pswp-src]');
+      const link = links[index];
+
+      if (!link) return null;
+
+      return {
+        src: link.getAttribute('data-pswp-src'),
+        width: Number.parseInt(link.getAttribute('data-pswp-width')) || 1200,
+        height: Number.parseInt(link.getAttribute('data-pswp-height')) || 800,
+        alt: link.querySelector('img')?.alt || '',
+        caption: link.getAttribute('data-pswp-caption') || '',
+        element: link
+      };
+    }
+  });
+
+  // Initialize the dynamic caption plugin
+  const captionPlugin = new PhotoSwipeDynamicCaption(lightbox, {
+    captionContent: (slide) => {
+      return slide.data.caption || slide.data.alt || '';
+    },
+    type: 'auto',
+    horizontalEdgeThreshold: 20,
+    mobileCaptionOverlapRatio: 0.3,
+    mobileLayoutBreakpoint: 600,
+    verticallyCenterImage: false
+  });
+
+  // Event listeners
+  lightbox.on('beforeOpen', () => {
+    document.body.style.overflow = 'hidden';
+  });
+
+  lightbox.on('destroy', () => {
+    document.body.style.overflow = '';
+  });
+
+  lightbox.on('loadComplete', (e) => {
+    const img = e.slide.data.element?.querySelector('img');
+    if (img && !e.slide.data.width) {
+      // Update dimensions if they weren't available initially
+      e.slide.data.width = img.naturalWidth;
+      e.slide.data.height = img.naturalHeight;
+    }
+  });
+
+  // Initialize the lightbox
+  lightbox.init();
+
+  console.log(`PhotoSwipe initialized with ${images.length} images`);
+  return lightbox;
+}
+
+// Auto-initialize when DOM is ready
+function init() {
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initPhotoSwipe);
+  } else {
+    initPhotoSwipe();
+  }
+}
+
+// Initialize on load
+init();
+
+// Export
+
+
+m
+  </script>
+
+</body>
+
+</html>

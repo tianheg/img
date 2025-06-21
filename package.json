@@ -1,26 +1,16 @@
 {
   "name": "img",
-  "type": "module",
   "private": true,
   "scripts": {
-    "dev": "astro dev",
-    "build": "astro build",
-    "astro": "astro",
-    "exif": "bun run scripts/rmExif.js",
+    "build": "hugo --gc --minify --buildFuture",
+    "dev": "hugo serve --buildFuture",
     "lint": "biome check --write ."
   },
-  "dependencies": {
-    "photoswipe": "^5.4.4"
-  },
   "devDependencies": {
-    "@astrojs/check": "0.9.4",
-    "@biomejs/biome": "^1.9.4",
-    "@tailwindcss/vite": "^4.1.10",
-    "astro": "5.9.3",
+    "@biomejs/biome": "1.9.4",
+    "@tailwindcss/cli": "^4.1.10",
+    "@tailwindcss/typography": "^0.5.16",
     "daisyui": "^5.0.43",
-    "exif-parser": "^0.1.12",
-    "sharp": "^0.34.2",
-    "tailwindcss": "^4.1.10",
-    "typescript": "^5.7.2"
+    "tailwindcss": "^4.1.10"
   }
 }

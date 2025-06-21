@@ -1,0 +1,18 @@
+{{- $ := index . "$" -}}
+{{- $pages := $.Pages -}}
+{{- $listDateFormat := "Jan" -}}
+{{- $limit := -1 -}}
+{{- if ge $limit 0 -}}
+	{{- $pages = $pages | first $limit -}}
+{{- end -}}
+{{- with $pages -}}
+	<ul>
+		{{ range . }}
+			<li class="">
+				<a href="{{ .RelPermalink }}" class="">{{ .LinkTitle }}</a>
+				(in
+				<time datetime="{{ .PublishDate.Format "2006-01-02T15:04:05-07:00" }}" class="">{{ .PublishDate.Format $listDateFormat }}</time>)
+			</li>
+		{{ end }}
+	</ul>
+{{ end }}

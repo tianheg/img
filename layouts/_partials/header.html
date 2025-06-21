@@ -1,0 +1,17 @@
+<a href="{{ "" | relURL }}" class="title">
+  <h2>{{ .Site.Title }}</h2>
+</a>
+<nav class="flex flex-wrap">
+
+  {{ range .Site.Menus.main }}
+
+  {{- $linkType := (string .Params.rel) -}}
+  <a href="{{ .URL }}" {{ if eq $linkType "external" }} target="_blank" rel="external" {{ end }} class="mr-5">
+    {{- with .Name -}}
+      {{ . }}
+    {{- end -}}
+  </a>
+
+  {{ end }}
+
+</nav>
