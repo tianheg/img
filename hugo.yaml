@@ -1,2 +1,11 @@
 baseURL: "https://img.tianheg.org/"
 title: "Img"
+
+menu:
+  main:
+    - name: "Home"
+      url: "/"
+      weight: 1
+    - name: "Photos"
+      url: "/photos/"
+      weight: 2
