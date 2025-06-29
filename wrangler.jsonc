@@ -1,7 +1,11 @@
 {
   "name": "img",
-  "compatibility_date": "2025-06-09",
+  "compatibility_date": "2025-06-29",
+  "build": {
+    "command": "./scripts/build.sh"
+  },
   "assets": {
-    "directory": "./dist"
+    "directory": "./public",
+    "not_found_handling": "404-page"
   }
 }
