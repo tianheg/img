@@ -27,7 +27,7 @@ main() {
   git config core.quotepath false
 
   # Build the site.
-  bun run all
+  bun run build
 
 }
 
