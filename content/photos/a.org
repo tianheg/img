@@ -1,7 +1,0 @@
-#+TITLE: Audrey Hepburn
-#+DATE: 2025-07-06
-
-
-#+CAPTION: Audrey Hepburn
-[[/images/internet/audrey-hepburn.png]]
-
