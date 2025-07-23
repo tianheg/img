@@ -12,12 +12,6 @@
   {{ if (eq .Kind "section") }}
     {{ $sectionPage := .CurrentSection }}
     {{ range .Site.RegularPages }}
-
-
-
-
-
-    
       {{ if (.IsDescendant $sectionPage) }}
         {{ $.Store.Add "pages" (slice .) }}
       {{ end }}

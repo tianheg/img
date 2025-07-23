@@ -7,17 +7,5 @@
         {{ .Content }}
       </div>
     {{ end }}
-
-    {{ $pages := .Pages }}
-    {{ if $pages }}
-      {{ range $pages.GroupByDate "2006" }}
-        {{ $.Store.Set "year" .Key }}
-        {{ $year := $.Store.Get "year" }}
-        <h2>{{ $year }}</h2>
-        {{ partial "list-item.html" (dict "$" .) }}
-      {{ end }}
-    {{ else }}
-      <p>No posts found in this {{ .Data.Singular }}.</p>
-    {{ end }}
   </div>
 {{ end }}

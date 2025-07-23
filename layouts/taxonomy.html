@@ -7,18 +7,5 @@
         {{ .Content }}
       </div>
     {{ end }}
-
-    {{ if .Data.Terms }}
-      <div class="taxonomy-terms">
-        {{ range .Data.Terms.Alphabetical }}
-          <div class="term">
-            <h3><a href="{{ .Page.Permalink }}">{{ .Page.Title }}</a></h3>
-            <p>{{ .Count }} {{ if eq .Count 1 }}post{{ else }}posts{{ end }}</p>
-          </div>
-        {{ end }}
-      </div>
-    {{ else }}
-      <p>No {{ .Data.Singular }} found.</p>
-    {{ end }}
   </div>
 {{ end }}
