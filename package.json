@@ -3,11 +3,9 @@
   "private": true,
   "scripts": {
     "build": "hugo --gc --minify --buildFuture",
-    "dev": "hugo serve --buildFuture",
-    "lint": "biome check --write ."
+    "dev": "hugo serve --buildFuture"
   },
   "devDependencies": {
-    "@biomejs/biome": "1.9.4",
     "@tailwindcss/cli": "^4.1.10",
     "@tailwindcss/typography": "^0.5.16",
     "daisyui": "^5.0.43",

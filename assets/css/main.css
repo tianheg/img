@@ -1,13 +1,10 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 @plugin "daisyui" {
-  /* biome-ignore lint/correctness/noUnknownProperty: <explanation> */
   themes: silk --light, sunset --prefersdark;
 }
 @plugin "daisyui/theme" {
-  /* biome-ignore lint/correctness/noUnknownProperty: <explanation> */
   name: "silk";
-  /* biome-ignore lint/correctness/noUnknownProperty: <explanation> */
   default: true;
   --color-base-100: oklch(97% 0.0035 67.78);
 }
